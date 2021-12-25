@@ -1,5 +1,6 @@
 import argparse
 import glob
+import os
 
 import tensorflow.compat.v1 as tf
 from google.protobuf import text_format
@@ -32,8 +33,10 @@ def edit(train_dir, eval_dir, batch_size, checkpoint, label_map):
     pipeline_config.eval_input_reader[0].label_map_path = label_map
     pipeline_config.eval_input_reader[0].tf_record_input_reader.input_path[:] = evaluation_files
 
-    config_text = text_format.MessageToString(pipeline_config)             
-    with tf.gfile.Open("pipeline_new.config", "wb") as f:                                                                                                                                                                                                                       
+    config_text = text_format.MessageToString(pipeline_config)
+    if not os.path.isdir('./training/reference/'):
+        os.mkdir('./training/reference/')
+    with tf.gfile.Open("./training/reference/pipeline_new.config", "wb") as f:                                                                                                                                                                                                                       
         f.write(config_text)   
 
 
