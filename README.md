@@ -27,13 +27,13 @@ This project uses the data from the [Waymo Open dataset](https://waymo.com/open/
 
 download_process.py is used to download files based on filenames.txt (100 files) and convert from Waymo tf record into a tf api tf record and example.
 
-python download_process.py --data_dir ./data
+- python download_process.py --data_dir ./data
 
 ### Exploratory Data Analysis
 
 <Exploratory Data Analysis.ipynb> shows the visualization results of data. 
 
-jupyter notebook
+- jupyter notebook
 
 1. Distribution of Classes for 500 Random Images
 ![alt text](https://github.com/vickyting0910/objectdetection/blob/main/images/distribution.png?raw=true)
@@ -51,13 +51,13 @@ jupyter notebook
 
 <create_splits.py> is used to split 100 files into training, testing and validation datasets, placed in 3 different folders under ./training/ ./testing/ ./validation/.  
 
-python create_splits.py --source ./data/processed --train_prop 0.75 --test_prop 0.1 --valid_prop 0.15
+- python create_splits.py --source ./data/processed --train_prop 0.75 --test_prop 0.1 --valid_prop 0.15
 
 ### Download the Pretrained Model
 
 <download_pretrain.py> is used to download and extra the pretrained model
 
-python download_pretrain.py
+- python download_pretrain.py
 
 ### Set up config file
 
@@ -72,7 +72,7 @@ python download_pretrain.py
       overlap_thresh: 0.0
     }
 
-python edit_config.py --train_dir ./training/ --eval_dir ./validation/ --batch_size 4 --checkpoint ./pretrained-models/ssd_resnet50_v1_fpn_640x640_coco17_tpu-8/checkpoint/ckpt-0 --label_map ./label_map.pbtxt
+- python edit_config.py --train_dir ./training/ --eval_dir ./validation/ --batch_size 4 --checkpoint ./pretrained-models/ssd_resnet50_v1_fpn_640x640_coco17_tpu-8/checkpoint/ckpt-0 --label_map ./label_map.pbtxt
 
 2. <enhance_config.py> is used to create enhanced configuration file for Tensorflow Object Detection API (pipeline_new.config) under ./training/enhance/
 -- random_horizontal_flip
@@ -95,7 +95,7 @@ python edit_config.py --train_dir ./training/ --eval_dir ./validation/ --batch_s
       max_delta: 0.9
     }
 
-python enhance_config.py --train_dir ./training/ --eval_dir ./validation/ --batch_size 4 --checkpoint ./pretrained-models/ssd_resnet50_v1_fpn_640x640_coco17_tpu-8/checkpoint/ckpt-0 --label_map ./label_map.pbtxt --brightness 0.5
+- python enhance_config.py --train_dir ./training/ --eval_dir ./validation/ --batch_size 4 --checkpoint ./pretrained-models/ssd_resnet50_v1_fpn_640x640_coco17_tpu-8/checkpoint/ckpt-0 --label_map ./label_map.pbtxt --brightness 0.5
 
 3. <change_config.py> is used to create another enhanced configuration file with different optimizer configuration for Tensorflow Object Detection API (pipeline_new.config) under ./training/change/
 -- random_horizontal_flip
@@ -132,24 +132,24 @@ python enhance_config.py --train_dir ./training/ --eval_dir ./validation/ --batc
     use_moving_average: false
   }
 
-python change_config.py --train_dir ./training/ --eval_dir ./validation/ --batch_size 4 --checkpoint ./pretrained-models/ssd_resnet50_v1_fpn_640x640_coco17_tpu-8/checkpoint/ckpt-0 --label_map ./label_map.pbtxt --brightness 0.2 --learning_rate 0.015
+- python change_config.py --train_dir ./training/ --eval_dir ./validation/ --batch_size 4 --checkpoint ./pretrained-models/ssd_resnet50_v1_fpn_640x640_coco17_tpu-8/checkpoint/ckpt-0 --label_map ./label_map.pbtxt --brightness 0.2 --learning_rate 0.015
 
 ### Training
 
 model_main_tf2.py is used to train models
 
-python ./experiments/model_main_tf2.py --model_dir=./training/reference/ --pipeline_config_path=./training/reference/pipeline_new.config
+- python ./experiments/model_main_tf2.py --model_dir=./training/reference/ --pipeline_config_path=./training/reference/pipeline_new.config
 
-python ./experiments/model_main_tf2.py --model_dir=./training/enhance/ --pipeline_config_path=./training/enhance/pipeline_new.config
+- python ./experiments/model_main_tf2.py --model_dir=./training/enhance/ --pipeline_config_path=./training/enhance/pipeline_new.config
 
-python ./experiments/model_main_tf2.py --model_dir=./training/change/ --pipeline_config_path=./training/change/pipeline_new.config
+- python ./experiments/model_main_tf2.py --model_dir=./training/change/ --pipeline_config_path=./training/change/pipeline_new.config
 
 
 ### Enhancement
 
 Explore augmentations.ipynb is used to explore potentials to improve models
 
-jupyter notebook
+- jupyter notebook
 
 1. An Example of <edit_config.py>
 
@@ -167,35 +167,43 @@ jupyter notebook
 
 model_main_tf2.py is also used to validate models. 
 
-python ./experiments/model_main_tf2.py --model_dir ./training/reference/ --pipeline_config_path ./training/reference/pipeline_new.config --checkpoint_dir ./training/reference/
+- python ./experiments/model_main_tf2.py --model_dir ./training/reference/ --pipeline_config_path ./training/reference/pipeline_new.config --checkpoint_dir ./training/reference/
 
-python ./experiments/model_main_tf2.py --model_dir=./training/enhance/ --pipeline_config_path=./training/enhance/pipeline_new.config --checkpoint_dir=./training/enhance/
+- python ./experiments/model_main_tf2.py --model_dir=./training/enhance/ --pipeline_config_path=./training/enhance/pipeline_new.config --checkpoint_dir=./training/enhance/
 
-python ./experiments/model_main_tf2.py --model_dir=./training/change/ --pipeline_config_path=./training/change/pipeline_new.config --checkpoint_dir=./training/change/
+- python ./experiments/model_main_tf2.py --model_dir=./training/change/ --pipeline_config_path=./training/change/pipeline_new.config --checkpoint_dir=./training/change/
+
+1. Loss/classification_loss
+
+![alt_text](https://github.com/vickyting0910/objectdetection/blob/main/images/Loss_classification_loss.svg)
+
+2. Loss/total_loss
+
+![alt_text](https://github.com/vickyting0910/objectdetection/blob/main/images/Loss_total_loss.svg)
 
 ### Export Models 
 
-exporter_main_v2.py is used to save models for future uses. 
+- exporter_main_v2.py is used to save models for future uses. 
 
-python ./experiments/exporter_main_v2.py --input_type image_tensor --pipeline_config_path training/reference/pipeline_new.config --trained_checkpoint_dir training/reference --output_directory training/reference/exported_model/
+- python ./experiments/exporter_main_v2.py --input_type image_tensor --pipeline_config_path training/reference/pipeline_new.config --trained_checkpoint_dir training/reference --output_directory training/reference/exported_model/
 
-python ./experiments/exporter_main_v2.py --input_type image_tensor --pipeline_config_path training/enhance/pipeline_new.config --trained_checkpoint_dir training/enhance --output_directory training/enhance/exported_model/
+- python ./experiments/exporter_main_v2.py --input_type image_tensor --pipeline_config_path training/enhance/pipeline_new.config --trained_checkpoint_dir training/enhance --output_directory training/enhance/exported_model/
 
-python ./experiments/exporter_main_v2.py --input_type image_tensor --pipeline_config_path training/change/pipeline_new.config --trained_checkpoint_dir training/change --output_directory training/change/exported_model/
+- python ./experiments/exporter_main_v2.py --input_type image_tensor --pipeline_config_path training/change/pipeline_new.config --trained_checkpoint_dir training/change --output_directory training/change/exported_model/
 
 ### Inference
 
 inference_video.py is used to inference the new image. In this case, segment-10107710434105775874_760_000_780_000_with_camera_labels.tfrecord is used. 
 
-python inference_video.py --labelmap_path label_map.pbtxt --model_path training/reference/exported_model/saved_model --tf_record_path testing/segment-10107710434105775874_760_000_780_000_with_camera_labels.tfrecord --config_path training/reference/pipeline_new.config --output_path training/reference/animation.gif
+- python inference_video.py --labelmap_path label_map.pbtxt --model_path training/reference/exported_model/saved_model --tf_record_path testing/segment-10107710434105775874_760_000_780_000_with_camera_labels.tfrecord --config_path training/reference/pipeline_new.config --output_path training/reference/animation.gif
 
 ![alt_text](https://github.com/vickyting0910/objectdetection/blob/main/images/animation_reference.gif)
 
-python inference_video.py --labelmap_path label_map.pbtxt --model_path training/enhance/exported_model/saved_model --tf_record_path testing/segment-10107710434105775874_760_000_780_000_with_camera_labels.tfrecord --config_path training/enhance/pipeline_new.config --output_path training/enhance/animation.gif
+- python inference_video.py --labelmap_path label_map.pbtxt --model_path training/enhance/exported_model/saved_model --tf_record_path testing/segment-10107710434105775874_760_000_780_000_with_camera_labels.tfrecord --config_path training/enhance/pipeline_new.config --output_path training/enhance/animation.gif
 
 ![alt_text](https://github.com/vickyting0910/objectdetection/blob/main/images/animation_enhance.gif)
 
-python inference_video.py --labelmap_path label_map.pbtxt --model_path training/change/exported_model/saved_model --tf_record_path testing/segment-10107710434105775874_760_000_780_000_with_camera_labels.tfrecord --config_path training/change/pipeline_new.config --output_path training/change/animation.gif
+- python inference_video.py --labelmap_path label_map.pbtxt --model_path training/change/exported_model/saved_model --tf_record_path testing/segment-10107710434105775874_760_000_780_000_with_camera_labels.tfrecord --config_path training/change/pipeline_new.config --output_path training/change/animation.gif
 
 ![alt_text](https://github.com/vickyting0910/objectdetection/blob/main/images/animation_change.gif)
 
