@@ -189,13 +189,13 @@ inference_video.py is used to inference the new image. In this case, segment-101
 
 python inference_video.py --labelmap_path label_map.pbtxt --model_path training/reference/exported_model/saved_model --tf_record_path testing/segment-10107710434105775874_760_000_780_000_with_camera_labels.tfrecord --config_path training/reference/pipeline_new.config --output_path training/reference/animation.mp4
 
-<video src='https://github.com/vickyting0910/objectdetection/blob/main/images/animation_reference.mp4' width=180/>
+![alt_text](https://github.com/vickyting0910/objectdetection/blob/main/images/animation_reference.mp4)
 
 python inference_video.py --labelmap_path label_map.pbtxt --model_path training/enhance/exported_model/saved_model --tf_record_path testing/segment-10107710434105775874_760_000_780_000_with_camera_labels.tfrecord --config_path training/enhance/pipeline_new.config --output_path training/enhance/animation.mp4
 
-<video src='https://github.com/vickyting0910/objectdetection/blob/main/images/animation_enhance.mp4' width=180/>
+![alt_text](https://github.com/vickyting0910/objectdetection/blob/main/images/animation_enhance.mp4)
 
 python inference_video.py --labelmap_path label_map.pbtxt --model_path training/change/exported_model/saved_model --tf_record_path testing/segment-10107710434105775874_760_000_780_000_with_camera_labels.tfrecord --config_path training/change/pipeline_new.config --output_path training/change/animation.mp4
 
-<video src='https://github.com/vickyting0910/objectdetection/blob/main/images/animation_change.mp4' width=180/>
+![alt_text](https://github.com/vickyting0910/objectdetection/blob/main/images/animation_change.mp4)
 
