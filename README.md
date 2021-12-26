@@ -2,13 +2,24 @@
 
 ## Objectives
 
-This project aims for identifying objects using TensorFlow object detection API, especially on cars,pedestrians, cyclists. The idea is fit rectangular bounding boxes on the images with objects in different conditions. Here are 10 sample images.  
+This project aims for identifying objects using TensorFlow Object Detection API, especially on cars,pedestrians, cyclists. The idea is fit rectangular bounding boxes on the images with objects in different conditions. Here are 10 sample images.  
 
 ![alt text](https://github.com/vickyting0910/objectdetection/blob/main/images/samples.png?raw=true)
 
 ## Data
 
 This project uses the data from the [Waymo Open dataset](https://waymo.com/open/). 
+
+## Requirements
+
+- conda install -c conda-forge ffmpeg
+- conda install -c anaconda tensorflow-gpu
+- conda install numpy
+- TensorFlow Object Detection API: https://tensorflow-object-detection-api-tutorial.readthedocs.io/en/latest/install.html
+- WSL GPU Installation: https://docs.nvidia.com/cuda/wsl-user-guide/index.html
+- CUDA Archive: https://developer.nvidia.com/cuda-toolkit-archive
+- cuDNN Installation: https://docs.nvidia.com/deeplearning/cudnn/install-guide/index.html
+- waymo_open_dataset: https://github.com/waymo-research/waymo-open-dataset/blob/master/docs/quick_start.md
 
 ## Pipeline
 
@@ -35,21 +46,21 @@ download_process.py is used to download files based on filenames.txt (100 files)
 
 - jupyter notebook
 
-1. Distribution of Classes for 500 Random Images
+1. Distribution of Classes for 500 Random Images: most classes are cars
 ![alt text](https://github.com/vickyting0910/objectdetection/blob/main/images/distribution.png?raw=true)
 
-2. Percentage of Car Class over All Class
+2. Percentage of Car Class over All Class: images mostly (over 80%) are classified as cars. 
 ![alt text](https://github.com/vickyting0910/objectdetection/blob/main/images/car.png?raw=true)
 
-3. Percentage of Pedestrian Class over All Class
+3. Percentage of Pedestrian Class over All Class: images less than 40% are classified as pedestrians. 
 ![alt text](https://github.com/vickyting0910/objectdetection/blob/main/images/ped.png?raw=true)
 
-4. Percentage of Cyclist Class over All Class
+4. Percentage of Cyclist Class over All Class: images less than 5% are classified as cyclists. 
 ![alt text](https://github.com/vickyting0910/objectdetection/blob/main/images/cyc.png?raw=true)
 
-### Split Data
+### Cross Validation and Split Data
 
-<create_splits.py> is used to split 100 files into training, testing and validation datasets, placed in 3 different folders under ./training/ ./testing/ ./validation/.  
+<create_splits.py> is used to split 100 tfrecord files randomly into training, testing and validation datasets, placed in 3 different folders under ./training/ ./testing/ ./validation/. The split proportions are 75% for training data, 15% for validation data, and 10% for testing data. This strategy is to ensure that we have a sufficient number of samples for training and validation, and remain class distributions in raw data. 
 
 - python create_splits.py --source ./data/processed --train_prop 0.75 --test_prop 0.1 --valid_prop 0.15
 
@@ -62,7 +73,9 @@ download_process.py is used to download files based on filenames.txt (100 files)
 ### Set up config file
 
 1. <edit_config.py> is used to create configuration file for Tensorflow Object Detection API (pipeline_new.config) under ./training/reference/
+
 -- random_horizontal_flip
+
 -- random_crop_image {
       min_object_covered: 0.0
       min_aspect_ratio: 0.75
@@ -75,7 +88,9 @@ download_process.py is used to download files based on filenames.txt (100 files)
 - python edit_config.py --train_dir ./training/ --eval_dir ./validation/ --batch_size 4 --checkpoint ./pretrained-models/ssd_resnet50_v1_fpn_640x640_coco17_tpu-8/checkpoint/ckpt-0 --label_map ./label_map.pbtxt
 
 2. <enhance_config.py> is used to create enhanced configuration file for Tensorflow Object Detection API (pipeline_new.config) under ./training/enhance/
+
 -- random_horizontal_flip
+
 -- random_crop_image {
       min_object_covered: 0.0
       min_aspect_ratio: 0.75
@@ -84,12 +99,15 @@ download_process.py is used to download files based on filenames.txt (100 files)
       max_area: 1.0
       overlap_thresh: 0.0
     }
+
 -- random_adjust_brightness {
       max_delta: 0.2
     }
+
 -- random_rgb_to_gray {
       probability: 0.2
     }
+
 -- random_adjust_contrast {
       min_delta: 0.6
       max_delta: 0.9
@@ -98,7 +116,9 @@ download_process.py is used to download files based on filenames.txt (100 files)
 - python enhance_config.py --train_dir ./training/ --eval_dir ./validation/ --batch_size 4 --checkpoint ./pretrained-models/ssd_resnet50_v1_fpn_640x640_coco17_tpu-8/checkpoint/ckpt-0 --label_map ./label_map.pbtxt --brightness 0.5
 
 3. <change_config.py> is used to create another enhanced configuration file with different optimizer configuration for Tensorflow Object Detection API (pipeline_new.config) under ./training/change/
+
 -- random_horizontal_flip
+
 -- random_crop_image {
       min_object_covered: 0.0
       min_aspect_ratio: 0.75
@@ -107,16 +127,20 @@ download_process.py is used to download files based on filenames.txt (100 files)
       max_area: 1.0
       overlap_thresh: 0.0
     }
+
 -- random_adjust_brightness {
       max_delta: 0.2
     }
+
 -- random_rgb_to_gray {
       probability: 0.2
     }
+
 -- random_adjust_contrast {
       min_delta: 0.6
       max_delta: 0.9
     }
+
 --optimizer {
     momentum_optimizer {
       learning_rate {
@@ -136,7 +160,7 @@ download_process.py is used to download files based on filenames.txt (100 files)
 
 ### Training
 
-model_main_tf2.py is used to train models
+model_main_tf2.py is used to train models with 3 different configuration files. 
 
 - python ./experiments/model_main_tf2.py --model_dir=./training/reference/ --pipeline_config_path=./training/reference/pipeline_new.config
 
@@ -173,13 +197,31 @@ model_main_tf2.py is also used to validate models.
 
 - python ./experiments/model_main_tf2.py --model_dir=./training/change/ --pipeline_config_path=./training/change/pipeline_new.config --checkpoint_dir=./training/change/
 
-1. Loss/classification_loss
 
-![alt_text](https://github.com/vickyting0910/objectdetection/blob/main/images/Loss_classification_loss.svg)
+One example of the side-by-side evaluation:
 
-2. Loss/total_loss
+![alt_text](https://github.com/vickyting0910/objectdetection/blob/main/images/eval.png)
 
-![alt_text](https://github.com/vickyting0910/objectdetection/blob/main/images/Loss_total_loss.svg)
+### Results
+
+- tensorboard --logdir=training
+
+1. Precision
+
+As both precision and recall start to increase, the precision and recall curves show that the performance of the model increases.
+
+![alt_text](https://github.com/vickyting0910/objectdetection/blob/main/images/precision.png)
+
+2. Recall
+
+![alt_text](https://github.com/vickyting0910/objectdetection/blob/main/images/recall.png)
+
+3. Loss
+
+Three configuration files contribute to the below loss. The second configuration (enhance) has the lowest loss, showing the best performance between prediction and data. However, the third configuration (change) has the worst performance. 
+
+![alt_text](https://github.com/vickyting0910/objectdetection/blob/main/images/loss.png)
+
 
 ### Export Models 
 
