@@ -21,13 +21,15 @@ def split(source, destination):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Split data into training / validation / testing')
-    parser.add_argument('--source', required=True,
-                        help='source data directory')
-    parser.add_argument('--destination', required=True,
-                        help='destination data directory')
+    parser = argparse.ArgumentParser(
+        description="Split data into training / validation / testing"
+    )
+    parser.add_argument("--source", required=True, help="source data directory")
+    parser.add_argument(
+        "--destination", required=True, help="destination data directory"
+    )
     args = parser.parse_args()
 
     logger = get_module_logger(__name__)
-    logger.info('Creating splits...')
+    logger.info("Creating splits...")
     split(args.source, args.destination)
